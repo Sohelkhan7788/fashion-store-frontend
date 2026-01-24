@@ -22,22 +22,19 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // 🔐 GUARD: already logged-in user should not see login page
+  // ✅ Guard: agar user already logged-in hai → home bhejo
   useEffect(() => {
     const token = localStorage.getItem("token");
     const user = JSON.parse(localStorage.getItem("user"));
 
     if (token && user) {
-      if (user.isAdmin) {
-        navigate("/admin/products");
-      } else {
-        navigate("/");
-      }
+      navigate("/"); // 👈 sabko home
     }
   }, [navigate]);
 
-  const handleChange = (e) =>
+  const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,15 +43,12 @@ const Login = () => {
 
       const res = await api.post("/auth/login", form);
 
-      // ✅ REQUIRED FOR ADMIN & AUTH FLOW
+      // ✅ Save auth data
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      if (res.data.user.isAdmin) {
-        navigate("/admin/products");
-      } else {
-        navigate("/");
-      }
+      // ✅ ALWAYS redirect to home
+      navigate("/");
     } catch (err) {
       alert(err.response?.data?.message || "Login failed");
     } finally {
@@ -70,7 +64,7 @@ const Login = () => {
         animate="visible"
         className="w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden grid md:grid-cols-2 bg-gray-900 text-white"
       >
-        {/* Left Branding */}
+        {/* Left Section */}
         <div className="hidden md:flex flex-col justify-center p-10 bg-gradient-to-br from-gray-900 to-black">
           <motion.h2 variants={item} className="text-3xl font-bold mb-4">
             Welcome Back
@@ -127,10 +121,7 @@ const Login = () => {
             </motion.button>
           </motion.form>
 
-          <motion.p
-            variants={item}
-            className="text-sm text-center mt-6"
-          >
+          <motion.p variants={item} className="text-sm text-center mt-6">
             Don’t have an account?{" "}
             <Link to="/register" className="font-medium underline">
               Sign Up

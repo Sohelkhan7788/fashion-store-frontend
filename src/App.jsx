@@ -23,6 +23,10 @@ import AddProduct from "./admin/pages/AddProduct";
 import EditProduct from './admin/pages/EditProduct'
 import AdminOrders from './admin/pages/AdminOrders'
 
+import Dashboard from "./admin/pages/Dashboard";
+
+
+
 function App() {
   return (
     <>
@@ -38,9 +42,13 @@ function App() {
         <Route path="/my-orders" element={<MyOrders />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        
+
 
         {/* -------- ADMIN ROUTES (PROTECTED) -------- */}
         <Route element={<AdminProtected />}>
+          
+          <Route path="/admin/dashboard" element={<Dashboard />} />
           <Route path="/admin/products" element={<AdminProducts />} />
           <Route path="/admin/add-product" element={<AddProduct />} />
           <Route path="/admin/edit-product/:id" element={<EditProduct />} />

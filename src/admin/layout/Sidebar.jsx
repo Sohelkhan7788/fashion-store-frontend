@@ -16,6 +16,14 @@ const Sidebar = () => {
 
       <nav className="px-4 space-y-2">
         <Link
+          to="/admin/dashboard"
+          className={`block px-4 py-2 rounded-lg ${isActive(
+            "/admin/dashboard"
+          )}`}
+        >
+          Dashboard
+        </Link>
+        <Link
           to="/admin/products"
           className={`block px-4 py-2 rounded-lg ${isActive(
             "/admin/products"
