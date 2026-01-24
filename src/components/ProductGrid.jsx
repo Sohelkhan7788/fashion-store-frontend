@@ -1,47 +1,56 @@
-import React, { useEffect, useState } from 'react'
-import ProductCard from './ProductCard'
+import { useEffect, useState } from "react";
+import ProductCard from "./ProductCard";
 import api from "../utils/api";
 
 const ProductGrid = () => {
-  const [products, setProducts] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [showAll, setShowAll] = useState(false)
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await api.get("/products")
-        setProducts(res.data)
+        const res = await api.get("/products");
+        setProducts(res.data); // ✅ backend se jo array aa rahi hai
+        setError(null);
       } catch (err) {
-        setError("Failed to load products")
+        setError("Failed to load products");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    fetchProducts()
-  }, [])
+    };
+
+    fetchProducts();
+  }, []);
 
   if (loading) {
-    return <p className='text-center py-20'>Loading products...</p>
+    return <p className="text-center py-20">Loading products...</p>;
   }
 
   if (error) {
-    return <p className='text-center text-red-500 py-20'>{error}</p>
+    return (
+      <p className="text-center text-red-500 py-20">
+        {error}
+      </p>
+    );
   }
 
-  // ✅ ONLY THIS ARRAY SHOULD BE USED IN MAP
-  const visibleProducts = showAll ? products : products.slice(0, 6)
+  // ✅ show limited or all
+  const visibleProducts = showAll ? products : products.slice(0, 6);
 
   return (
     <>
-      <div className='mr-2 ml-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
-        {visibleProducts.map(product => (
-          <ProductCard key={product.id} product={product} />
+      <div className="mx-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {visibleProducts.map((product) => (
+          <ProductCard
+            key={product._id}   // ✅ MongoDB correct key
+            product={product}
+          />
         ))}
       </div>
 
-      {/* ✅ Show All Button */}
+      {/* Show All Button */}
       {!showAll && products.length > 6 && (
         <div className="mt-10 text-center">
           <button
@@ -53,7 +62,7 @@ const ProductGrid = () => {
         </div>
       )}
     </>
-  )
-}
+  );
+};
 
-export default ProductGrid
+export default ProductGrid;

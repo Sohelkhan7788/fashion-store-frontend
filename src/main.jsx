@@ -1,23 +1,18 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import React from "react";
+import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import './index.css'
-import App from './App.jsx'
-import { ClerkProvider } from "@clerk/clerk-react";
+import App from "./App";
+import "./index.css";
 
-import { CartProvider } from "./context/CartContext.jsx";
+// ✅ Cart Context Provider
+import { CartProvider } from "./context/CartContext";
 
-
-
-createRoot(document.getElementById('root')).render(
-  <ClerkProvider publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}>
-    
-    <BrowserRouter>
-      <CartProvider>
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <CartProvider>
+      <BrowserRouter>
         <App />
-        </CartProvider>
       </BrowserRouter>
-      
-  </ClerkProvider>
-  
-)
+    </CartProvider>
+  </React.StrictMode>
+);

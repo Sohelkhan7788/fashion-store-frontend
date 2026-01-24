@@ -17,22 +17,20 @@ const item = {
   visible: { opacity: 1, y: 0 },
 };
 
-const Login = () => {
-  const [form, setForm] = useState({ email: "", password: "" });
+const Register = () => {
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // 🔐 GUARD: already logged-in user should not see login page
+  // 🔐 GUARD: logged-in user should not access register page
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const user = JSON.parse(localStorage.getItem("user"));
-
-    if (token && user) {
-      if (user.isAdmin) {
-        navigate("/admin/products");
-      } else {
-        navigate("/");
-      }
+    if (token) {
+      navigate("/");
     }
   }, [navigate]);
 
@@ -43,20 +41,10 @@ const Login = () => {
     e.preventDefault();
     try {
       setLoading(true);
-
-      const res = await api.post("/auth/login", form);
-
-      // ✅ REQUIRED FOR ADMIN & AUTH FLOW
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
-
-      if (res.data.user.isAdmin) {
-        navigate("/admin/products");
-      } else {
-        navigate("/");
-      }
+      await api.post("/auth/register", form);
+      navigate("/login");
     } catch (err) {
-      alert(err.response?.data?.message || "Login failed");
+      alert(err.response?.data?.message || "Registration failed");
     } finally {
       setLoading(false);
     }
@@ -73,10 +61,10 @@ const Login = () => {
         {/* Left Branding */}
         <div className="hidden md:flex flex-col justify-center p-10 bg-gradient-to-br from-gray-900 to-black">
           <motion.h2 variants={item} className="text-3xl font-bold mb-4">
-            Welcome Back
+            Join Fashion Store
           </motion.h2>
           <motion.p variants={item} className="text-gray-300">
-            Login to explore the latest fashion trends curated for you.
+            Create an account and start shopping premium fashion today.
           </motion.p>
         </div>
 
@@ -86,7 +74,7 @@ const Login = () => {
             variants={item}
             className="text-2xl font-bold mb-6 text-center"
           >
-            Sign In
+            Create Account
           </motion.h2>
 
           <motion.form
@@ -94,6 +82,16 @@ const Login = () => {
             onSubmit={handleSubmit}
             className="space-y-4"
           >
+            <motion.input
+              variants={item}
+              type="text"
+              name="name"
+              placeholder="Full Name"
+              className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-black focus:outline-none"
+              onChange={handleChange}
+              required
+            />
+
             <motion.input
               variants={item}
               type="email"
@@ -123,7 +121,7 @@ const Login = () => {
               type="submit"
               className="w-full bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition"
             >
-              {loading ? "Signing in..." : "Login"}
+              {loading ? "Creating account..." : "Sign Up"}
             </motion.button>
           </motion.form>
 
@@ -131,9 +129,9 @@ const Login = () => {
             variants={item}
             className="text-sm text-center mt-6"
           >
-            Don’t have an account?{" "}
-            <Link to="/register" className="font-medium underline">
-              Sign Up
+            Already have an account?{" "}
+            <Link to="/login" className="font-medium underline">
+              Sign In
             </Link>
           </motion.p>
         </div>
@@ -142,4 +140,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;

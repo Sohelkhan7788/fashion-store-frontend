@@ -1,16 +1,20 @@
-import { useUser } from "@clerk/clerk-react";
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 
-const AdminProtected = ({ children }) => {
-  const { user, isLoaded } = useUser();
+const AdminProtected = () => {
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user"));
 
-  if (!isLoaded) return null;
-
-  if (user?.publicMetadata?.role !== "admin") {
-    return <Navigate to="/" />;
+  // not logged in
+  if (!token || !user) {
+    return <Navigate to="/login" replace />;
   }
 
-  return children;
+  // logged in but not admin
+  if (!user.isAdmin) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <Outlet />;
 };
 
 export default AdminProtected;
