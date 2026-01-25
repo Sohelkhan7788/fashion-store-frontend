@@ -190,7 +190,7 @@ const Checkout = () => {
 
         <button
           onClick={handlePlaceOrder}
-          className="w-full mt-6 bg-black text-white py-3 rounded-xl hover:opacity-90 transition"
+          className="w-full mt-6 bg-black text-white py-3 rounded-xl hover:opacity-90 transition active:scale-90 active:bg-gray-800"
         >
           Place Order
         </button>

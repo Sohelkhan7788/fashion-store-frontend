@@ -33,7 +33,7 @@ const ProductCard = ({ product }) => {
             console.log("buttpn clicked", product);
             addToCart(product)
           }}
-          className="mt-3 w-full bg-black text-white py-2.5 rounded-xl text-sm font-medium hover:opacity-90 transition"
+          className="mt-3 w-full bg-black text-white py-2.5 rounded-xl text-sm font-medium hover:opacity-90 transition active:scale-90 active:bg-gray-800"
         >
           Add to Cart
         </button>

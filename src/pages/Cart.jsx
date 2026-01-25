@@ -16,7 +16,7 @@ const Cart = () => {
         <h2 className="text-2xl font-semibold">Your cart is empty</h2>
         <Link
           to="/"
-          className="inline-block mt-6 text-black underline"
+          className="inline-block mt-6 text-black underline active:scale-90 active:bg-gray-900"
         >
           Continue shopping
         </Link>
@@ -111,7 +111,7 @@ const Cart = () => {
 
         <Link
           to="/checkout"
-          className="block mt-6 text-center bg-black text-white py-3 rounded-xl hover:opacity-90 transition"
+          className="block mt-6 text-center bg-black text-white py-3 rounded-xl hover:opacity-90 transition active:scale-90 active:bg-gray-900"
         >
           Proceed to Checkout
         </Link>
