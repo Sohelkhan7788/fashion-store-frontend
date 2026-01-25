@@ -22,13 +22,13 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // ✅ Guard: agar user already logged-in hai → home bhejo
+  /* 🔐 GUARD: already logged-in user should not see login page */
   useEffect(() => {
     const token = localStorage.getItem("token");
     const user = JSON.parse(localStorage.getItem("user"));
 
     if (token && user) {
-      navigate("/"); // 👈 sabko home
+      navigate("/"); // ✅ sabko home bhejo
     }
   }, [navigate]);
 
@@ -38,16 +38,22 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!form.email || !form.password) {
+      alert("All fields are required");
+      return;
+    }
+
     try {
       setLoading(true);
 
       const res = await api.post("/auth/login", form);
 
-      // ✅ Save auth data
+      // ✅ Save auth info
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      // ✅ ALWAYS redirect to home
+      // ✅ Always redirect to home
       navigate("/");
     } catch (err) {
       alert(err.response?.data?.message || "Login failed");
@@ -64,7 +70,7 @@ const Login = () => {
         animate="visible"
         className="w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden grid md:grid-cols-2 bg-gray-900 text-white"
       >
-        {/* Left Section */}
+        {/* Left Branding */}
         <div className="hidden md:flex flex-col justify-center p-10 bg-gradient-to-br from-gray-900 to-black">
           <motion.h2 variants={item} className="text-3xl font-bold mb-4">
             Welcome Back
@@ -93,8 +99,9 @@ const Login = () => {
               type="email"
               name="email"
               placeholder="Email"
-              className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-black focus:outline-none"
+              value={form.email}
               onChange={handleChange}
+              className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-black focus:outline-none"
               required
             />
 
@@ -103,8 +110,9 @@ const Login = () => {
               type="password"
               name="password"
               placeholder="Password"
-              className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-black focus:outline-none"
+              value={form.password}
               onChange={handleChange}
+              className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-black focus:outline-none"
               required
             />
 

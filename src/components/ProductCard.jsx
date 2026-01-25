@@ -4,6 +4,8 @@ import { CartContext } from "../context/CartContext";
 const ProductCard = ({ product }) => {
   const { addToCart } = useContext(CartContext);
 
+  
+
   return (
     <div className="border group bg-white rounded-2xl shadow-sm hover:shadow-lg transition duration-300 overflow-hidden">
       
@@ -27,7 +29,10 @@ const ProductCard = ({ product }) => {
         </p>
 
         <button
-          onClick={() => addToCart(product)}
+          onClick={() => {
+            console.log("buttpn clicked", product);
+            addToCart(product)
+          }}
           className="mt-3 w-full bg-black text-white py-2.5 rounded-xl text-sm font-medium hover:opacity-90 transition"
         >
           Add to Cart
