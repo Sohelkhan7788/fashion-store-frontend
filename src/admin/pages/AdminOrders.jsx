@@ -1,72 +1,142 @@
 import { useEffect, useState } from "react";
 import api from "../../utils/api";
-import AdminLayout from "../layout/AdminLayout";
 
 const AdminOrders = () => {
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  // Fetch all orders (ADMIN)
   useEffect(() => {
-    api.get("/orders").then(res => setOrders(res.data));
+    const fetchOrders = async () => {
+      try {
+        const res = await api.get("/orders");
+        setOrders(res.data);
+      } catch {
+        alert("Failed to load orders");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchOrders();
   }, []);
 
+  // Update order status
+  const updateStatus = async (id, status) => {
+    await api.put(`/orders/${id}/status`, { status });
+
+    setOrders((prev) =>
+      prev.map((o) =>
+        o._id === id ? { ...o, status } : o
+      )
+    );
+  };
+
+  if (loading) return <p>Loading orders...</p>;
+
+  const activeOrders = orders.filter(
+    (o) => o.status !== "Cancelled"
+  );
+
+  const cancelledOrders = orders.filter(
+    (o) => o.status === "Cancelled"
+  );
+
   return (
-    <AdminLayout>
-      <h1 className="text-2xl font-semibold mb-6">
-        Orders
-      </h1>
+    <div className="space-y-10">
 
-      {/* ================= DESKTOP TABLE ================= */}
-      <div className="hidden md:block bg-white rounded-xl shadow-sm overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-gray-600">
-            <tr>
-              <th className="p-4 text-left">Order</th>
-              <th className="p-4 text-left">Total</th>
-              <th className="p-4 text-left">Status</th>
-            </tr>
-          </thead>
+      {/* ACTIVE ORDERS */}
+      <div>
+        <h2 className="text-xl font-semibold mb-4">
+          Active Orders
+        </h2>
 
-          <tbody>
-            {orders.map(order => (
-              <tr key={order._id} className="border-t">
-                <td className="p-4">
-                  #{order._id.slice(-6)}
-                </td>
-                <td className="p-4">
-                  ₹{order.totalAmount}
-                </td>
-                <td className="p-4">
-                  {order.status}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {activeOrders.length === 0 && (
+          <p className="text-gray-500">No active orders</p>
+        )}
+
+        <div className="space-y-4">
+          {activeOrders.map((o) => (
+            <div
+              key={o._id}
+              className="bg-white p-4 rounded-xl shadow text-sm"
+            >
+              <p className="text-gray-500">
+                Order ID: {o._id}
+              </p>
+
+              <p>User: {o.user?.email}</p>
+              <p>Total: ₹ {o.totalAmount}</p>
+
+              <p className="font-medium">
+                Status: {o.status}
+              </p>
+
+              {/* ACTIONS */}
+              <div className="flex gap-2 mt-3">
+                <button
+                  onClick={() =>
+                    updateStatus(o._id, "Processing")
+                  }
+                  className="px-3 py-1 border rounded"
+                >
+                  Processing
+                </button>
+
+                <button
+                  onClick={() =>
+                    updateStatus(o._id, "Shipped")
+                  }
+                  className="px-3 py-1 border rounded"
+                >
+                  Shipped
+                </button>
+
+                <button
+                  onClick={() =>
+                    updateStatus(o._id, "Delivered")
+                  }
+                  className="px-3 py-1 bg-black text-white rounded"
+                >
+                  Delivered
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* ================= MOBILE CARDS ================= */}
-      <div className="md:hidden space-y-4">
-        {orders.map(order => (
-          /* 👇 YAHAN PASTE HOTA HAI TUMHARA CODE */
-          <div
-            key={order._id}
-            className="bg-white p-4 rounded-xl shadow-sm"
-          >
-            <p className="font-medium">
-              Order #{order._id.slice(-6)}
-            </p>
+      {/* CANCELLED ORDERS */}
+      <div>
+        <h2 className="text-xl font-semibold mb-4 text-red-600">
+          Cancelled Orders
+        </h2>
 
-            <p className="text-gray-600">
-              ₹{order.totalAmount}
-            </p>
+        {cancelledOrders.length === 0 && (
+          <p className="text-gray-500">No cancelled orders</p>
+        )}
 
-            <p className="text-sm mt-1">
-              {order.status}
-            </p>
-          </div>
-        ))}
+        <div className="space-y-4">
+          {cancelledOrders.map((o) => (
+            <div
+              key={o._id}
+              className="bg-gray-100 p-4 rounded-xl text-sm"
+            >
+              <p className="text-gray-500">
+                Order ID: {o._id}
+              </p>
+
+              <p>User: {o.user?.email}</p>
+              <p>Total: ₹ {o.totalAmount}</p>
+
+              <p className="text-red-600 font-semibold">
+                Status: Cancelled
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
-    </AdminLayout>
+
+    </div>
   );
 };
 

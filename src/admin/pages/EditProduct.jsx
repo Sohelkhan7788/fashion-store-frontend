@@ -1,69 +1,58 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../utils/api";
-import AdminLayout from "../layout/AdminLayout";
 
 const EditProduct = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-
-  const [product, setProduct] = useState({
+  const [form, setForm] = useState({
     title: "",
     price: "",
     image: "",
   });
 
   useEffect(() => {
-    api.get(`/products`).then(res => {
-      const found = res.data.find(p => p._id === id);
-      if (found) setProduct(found);
+    api.get("/products").then((res) => {
+      const p = res.data.find((x) => x._id === id);
+      if (p) setForm(p);
     });
   }, [id]);
 
-  const handleChange = e =>
-    setProduct({ ...product, [e.target.name]: e.target.value });
-
-  const submit = async () => {
-    await api.put(`/products/${id}`, product);
-    alert("Product updated");
+  const update = async () => {
+    await api.put(`/products/${id}`, form);
     navigate("/admin/products");
   };
 
   return (
-    <AdminLayout>
-      <h1 className="text-2xl font-semibold mb-6">Edit Product</h1>
+    <div>
+      <h2 className="text-lg font-semibold mb-4">Edit Product</h2>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm max-w-xl">
-        <div className="space-y-4">
-          <input
-            name="title"
-            value={product.title}
-            onChange={handleChange}
-            className="w-full border p-3 rounded-lg"
-          />
-          <input
-            name="price"
-            type="number"
-            value={product.price}
-            onChange={handleChange}
-            className="w-full border p-3 rounded-lg"
-          />
-          <input
-            name="image"
-            value={product.image}
-            onChange={handleChange}
-            className="w-full border p-3 rounded-lg"
-          />
+      <div className="space-y-3 max-w-md">
+        <input
+          value={form.title}
+          className="border p-2 w-full"
+          onChange={(e) => setForm({ ...form, title: e.target.value })}
+        />
+        <input
+          type="number"
+          value={form.price}
+          className="border p-2 w-full"
+          onChange={(e) => setForm({ ...form, price: e.target.value })}
+        />
+        <input
+          value={form.image}
+          className="border p-2 w-full"
+          onChange={(e) => setForm({ ...form, image: e.target.value })}
+        />
 
-          <button
-            onClick={submit}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg"
-          >
-            Update Product
-          </button>
-        </div>
+        <button
+          onClick={update}
+          className="bg-black text-white px-4 py-2 rounded"
+        >
+          Update
+        </button>
       </div>
-    </AdminLayout>
+    </div>
   );
 };
 

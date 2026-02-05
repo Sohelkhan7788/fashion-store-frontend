@@ -1,13 +1,17 @@
 import { Navigate, Outlet } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 
 const AdminProtected = () => {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const { user, authReady } = useContext(AuthContext);
+
+  if (!authReady) return null;
 
   if (!user || !user.isAdmin) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/" replace />;
   }
 
-  return <Outlet />; // 👈 yahin se child routes render honge
+  return <Outlet />;
 };
 
 export default AdminProtected;

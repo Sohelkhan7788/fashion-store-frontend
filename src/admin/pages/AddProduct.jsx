@@ -1,65 +1,139 @@
 import { useState } from "react";
 import api from "../../utils/api";
-import AdminLayout from "../layout/AdminLayout";
+import { useNavigate } from "react-router-dom";
 
 const AddProduct = () => {
-  const [product, setProduct] = useState({
-    title: "",
-    price: "",
-    image: "",
-  });
+  const navigate = useNavigate();
 
-  const handleChange = e =>
-    setProduct({ ...product, [e.target.name]: e.target.value });
+  const [title, setTitle] = useState("");
+  const [price, setPrice] = useState("");
+  const [description, setDescription] = useState("");
+  const [inStock, setInStock] = useState(true);
 
-  const submit = async () => {
-    await api.post("/products", product);
-    alert("Product added");
-    setProduct({ title: "", price: "", image: "" });
+  const [imageInput, setImageInput] = useState("");
+  const [images, setImages] = useState([]);
+
+  // ➕ Add image URL
+  const addImage = () => {
+    if (!imageInput.trim()) return;
+    setImages((prev) => [...prev, imageInput.trim()]);
+    setImageInput("");
+  };
+
+  // ❌ Remove image
+  const removeImage = (index) => {
+    setImages(images.filter((_, i) => i !== index));
+  };
+
+  // 🚀 Submit product
+  const submitProduct = async () => {
+    if (!title || !price || images.length === 0) {
+      alert("Title, price and at least one image required");
+      return;
+    }
+
+    try {
+      await api.post("/products", {
+        title,
+        price,
+        description,
+        images,
+        inStock,
+      });
+
+      alert("Product added successfully");
+      navigate("/admin/products");
+    } catch (err) {
+      alert("Failed to add product");
+    }
   };
 
   return (
-    <AdminLayout>
-      <h1 className="text-2xl font-semibold mb-6">
+    <div className="max-w-xl">
+      <h1 className="text-xl font-semibold mb-6">
         Add Product
       </h1>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm max-w-xl">
-        <div className="space-y-4">
-          <input
-            name="title"
-            placeholder="Product Title"
-            value={product.title}
-            onChange={handleChange}
-            className="w-full border p-3 rounded-lg"
-          />
+      {/* TITLE */}
+      <input
+        className="w-full border p-2 rounded mb-3"
+        placeholder="Product title"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+      />
 
-          <input
-            name="price"
-            placeholder="Price"
-            type="number"
-            value={product.price}
-            onChange={handleChange}
-            className="w-full border p-3 rounded-lg"
-          />
+      {/* PRICE */}
+      <input
+        type="number"
+        className="w-full border p-2 rounded mb-3"
+        placeholder="Price"
+        value={price}
+        onChange={(e) => setPrice(e.target.value)}
+      />
 
-          <input
-            name="image"
-            placeholder="Image URL"
-            value={product.image}
-            onChange={handleChange}
-            className="w-full border p-3 rounded-lg"
-          />
+      {/* DESCRIPTION */}
+      <textarea
+        className="w-full border p-2 rounded mb-4 min-h-[100px]"
+        placeholder="Product description (details, fabric, fit etc.)"
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+      />
 
-          <button
-            onClick={submit}
-            className="bg-blue-600 text-white px-6 py-3
-                       rounded-lg hover:bg-blue-700 transition">
-            Add Product
-          </button>
-        </div>
+      {/* IMAGE INPUT */}
+      <div className="flex gap-2 mb-3">
+        <input
+          className="flex-1 border p-2 rounded"
+          placeholder="Image URL"
+          value={imageInput}
+          onChange={(e) => setImageInput(e.target.value)}
+        />
+        <button
+          onClick={addImage}
+          className="px-4 bg-black text-white rounded"
+        >
+          Add
+        </button>
       </div>
-    </AdminLayout>
+
+      {/* IMAGE PREVIEW */}
+      {images.length > 0 && (
+        <div className="grid grid-cols-3 gap-3 mb-4">
+          {images.map((img, i) => (
+            <div key={i} className="relative">
+              <img
+                src={img}
+                alt=""
+                className="h-24 w-full object-cover rounded border"
+              />
+              <button
+                onClick={() => removeImage(i)}
+                className="absolute top-1 right-1 bg-red-600 text-white text-xs px-2 py-1 rounded"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* STOCK */}
+      <label className="flex items-center gap-2 mb-5">
+        <input
+          type="checkbox"
+          checked={inStock}
+          onChange={() => setInStock(!inStock)}
+        />
+        In Stock
+      </label>
+
+      {/* SUBMIT */}
+      <button
+        onClick={submitProduct}
+        className="w-full bg-black text-white py-3 rounded active:scale-95 transition"
+      >
+        Save Product
+      </button>
+    </div>
   );
 };
 

@@ -1,7 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { toast } from "react-toastify";
+
 import api from "../utils/api";
+import { AuthContext } from "../context/AuthContext";
 
 const container = {
   hidden: { opacity: 0, scale: 0.96 },
@@ -24,27 +27,52 @@ const Register = () => {
     password: "",
   });
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
-  // 🔐 GUARD: logged-in user should not access register page
+  const navigate = useNavigate();
+  const { user, login } = useContext(AuthContext);
+
+  // 🔐 Already logged-in user → redirect
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
+    if (user) {
       navigate("/");
     }
-  }, [navigate]);
+  }, [user, navigate]);
 
-  const handleChange = (e) =>
+  const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!form.name || !form.email || !form.password) {
+      toast.warning("Please fill all fields");
+      return;
+    }
+
+    if (form.password.length < 6) {
+      toast.warning("Password must be at least 6 characters");
+      return;
+    }
+
     try {
       setLoading(true);
-      await api.post("/auth/register", form);
-      navigate("/login");
+
+      const res = await api.post("/auth/register", form);
+
+      // ✅ Save token
+      localStorage.setItem("token", res.data.token);
+
+      // ✅ Update AuthContext
+      login(res.data.user);
+
+      toast.success("Account created successfully 🎉");
+      navigate("/");
+
     } catch (err) {
-      alert(err.response?.data?.message || "Registration failed");
+      toast.error(
+        err.response?.data?.message || "Registration failed"
+      );
     } finally {
       setLoading(false);
     }
@@ -61,10 +89,10 @@ const Register = () => {
         {/* Left Branding */}
         <div className="hidden md:flex flex-col justify-center p-10 bg-gradient-to-br from-gray-900 to-black">
           <motion.h2 variants={item} className="text-3xl font-bold mb-4">
-            Join Fashion Store
+            Create Account
           </motion.h2>
           <motion.p variants={item} className="text-gray-300">
-            Create an account and start shopping premium fashion today.
+            Join us to explore the latest fashion trends.
           </motion.p>
         </div>
 
@@ -74,7 +102,7 @@ const Register = () => {
             variants={item}
             className="text-2xl font-bold mb-6 text-center"
           >
-            Create Account
+            Sign Up
           </motion.h2>
 
           <motion.form
@@ -87,9 +115,9 @@ const Register = () => {
               type="text"
               name="name"
               placeholder="Full Name"
-              className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-black focus:outline-none"
+              value={form.name}
               onChange={handleChange}
-              required
+              className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-black focus:outline-none"
             />
 
             <motion.input
@@ -97,9 +125,9 @@ const Register = () => {
               type="email"
               name="email"
               placeholder="Email"
-              className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-black focus:outline-none"
+              value={form.email}
               onChange={handleChange}
-              required
+              className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-black focus:outline-none"
             />
 
             <motion.input
@@ -107,9 +135,9 @@ const Register = () => {
               type="password"
               name="password"
               placeholder="Password"
-              className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-black focus:outline-none"
+              value={form.password}
               onChange={handleChange}
-              required
+              className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-black focus:outline-none"
             />
 
             <motion.button
@@ -119,19 +147,16 @@ const Register = () => {
               transition={{ type: "spring", stiffness: 300 }}
               disabled={loading}
               type="submit"
-              className="w-full bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition"
+              className="w-full bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition disabled:opacity-50"
             >
-              {loading ? "Creating account..." : "Sign Up"}
+              {loading ? "Creating account..." : "Register"}
             </motion.button>
           </motion.form>
 
-          <motion.p
-            variants={item}
-            className="text-sm text-center mt-6"
-          >
+          <motion.p variants={item} className="text-sm text-center mt-6">
             Already have an account?{" "}
             <Link to="/login" className="font-medium underline">
-              Sign In
+              Login
             </Link>
           </motion.p>
         </div>

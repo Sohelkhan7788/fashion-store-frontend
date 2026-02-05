@@ -1,36 +1,27 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useContext } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
+import { toast } from "react-toastify";
+
 import api from "../utils/api";
+import { AuthContext } from "../context/AuthContext";
 
 const container = {
   hidden: { opacity: 0, scale: 0.96 },
   visible: {
     opacity: 1,
     scale: 1,
-    transition: { duration: 0.4, ease: "easeOut", staggerChildren: 0.1 },
+    transition: { duration: 0.4, ease: "easeOut" },
   },
-};
-
-const item = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
 };
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
-
-  /* 🔐 GUARD: already logged-in user should not see login page */
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const user = JSON.parse(localStorage.getItem("user"));
-
-    if (token && user) {
-      navigate("/"); // ✅ sabko home bhejo
-    }
-  }, [navigate]);
+  const location = useLocation();
+  const { login } = useContext(AuthContext);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -40,7 +31,7 @@ const Login = () => {
     e.preventDefault();
 
     if (!form.email || !form.password) {
-      alert("All fields are required");
+      toast.warning("All fields are required");
       return;
     }
 
@@ -49,14 +40,21 @@ const Login = () => {
 
       const res = await api.post("/auth/login", form);
 
-      // ✅ Save auth info
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+      // ✅ UPDATE AUTH CONTEXT (ONLY THIS)
+      login(res.data.user, res.data.token);
 
-      // ✅ Always redirect to home
-      navigate("/");
+      toast.success("Login successful 🎉");
+
+      // ✅ REDIRECT BACK OR HOME
+      const redirectTo =
+        location.state?.from?.pathname || "/";
+
+      navigate(redirectTo, { replace: true });
+
     } catch (err) {
-      alert(err.response?.data?.message || "Login failed");
+      toast.error(
+        err.response?.data?.message || "Login failed"
+      );
     } finally {
       setLoading(false);
     }
@@ -68,74 +66,46 @@ const Login = () => {
         variants={container}
         initial="hidden"
         animate="visible"
-        className="w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden grid md:grid-cols-2 bg-gray-900 text-white"
+        className="w-full max-w-md bg-white rounded-xl shadow-xl p-8"
       >
-        {/* Left Branding */}
-        <div className="hidden md:flex flex-col justify-center p-10 bg-gradient-to-br from-gray-900 to-black">
-          <motion.h2 variants={item} className="text-3xl font-bold mb-4">
-            Welcome Back
-          </motion.h2>
-          <motion.p variants={item} className="text-gray-300">
-            Login to explore the latest fashion trends curated for you.
-          </motion.p>
-        </div>
+        <h2 className="text-2xl font-bold mb-6 text-center">
+          Sign In
+        </h2>
 
-        {/* Right Form */}
-        <div className="bg-white text-black p-8 sm:p-10">
-          <motion.h2
-            variants={item}
-            className="text-2xl font-bold mb-6 text-center"
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={form.email}
+            onChange={handleChange}
+            className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-black outline-none"
+          />
+
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={form.password}
+            onChange={handleChange}
+            className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-black outline-none"
+          />
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-black text-white py-3 rounded-lg disabled:opacity-50"
           >
-            Sign In
-          </motion.h2>
+            {loading ? "Signing in..." : "Login"}
+          </button>
+        </form>
 
-          <motion.form
-            variants={container}
-            onSubmit={handleSubmit}
-            className="space-y-4"
-          >
-            <motion.input
-              variants={item}
-              type="email"
-              name="email"
-              placeholder="Email"
-              value={form.email}
-              onChange={handleChange}
-              className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-black focus:outline-none"
-              required
-            />
-
-            <motion.input
-              variants={item}
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={form.password}
-              onChange={handleChange}
-              className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-black focus:outline-none"
-              required
-            />
-
-            <motion.button
-              variants={item}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.96 }}
-              transition={{ type: "spring", stiffness: 300 }}
-              disabled={loading}
-              type="submit"
-              className="w-full bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition"
-            >
-              {loading ? "Signing in..." : "Login"}
-            </motion.button>
-          </motion.form>
-
-          <motion.p variants={item} className="text-sm text-center mt-6">
-            Don’t have an account?{" "}
-            <Link to="/register" className="font-medium underline">
-              Sign Up
-            </Link>
-          </motion.p>
-        </div>
+        <p className="text-sm text-center mt-6">
+          Don’t have an account?{" "}
+          <Link to="/register" className="font-medium underline">
+            Sign Up
+          </Link>
+        </p>
       </motion.div>
     </div>
   );
