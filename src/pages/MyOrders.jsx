@@ -1,21 +1,39 @@
 import { useEffect, useState } from "react";
 import api from "../utils/api";
 
+const statusColor = (status) => {
+  switch (status) {
+    case "Pending":
+      return "bg-yellow-100 text-yellow-700";
+    case "Shipped":
+      return "bg-blue-100 text-blue-700";
+    case "Delivered":
+      return "bg-green-100 text-green-700";
+    case "Cancelled":
+      return "bg-red-100 text-red-700";
+    default:
+      return "bg-gray-100 text-gray-600";
+  }
+};
+
 const MyOrders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchOrders = async () => {
-      const res = await api.get("/orders/my");
-      setOrders(res.data);
-      setLoading(false);
+      try {
+        const res = await api.get("/orders/my");
+        setOrders(res.data);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchOrders();
   }, []);
 
   const cancelOrder = async (id) => {
-    if (!confirm("Cancel this order?")) return;
+    if (!window.confirm("Cancel this order?")) return;
 
     await api.put(`/orders/${id}/cancel`);
 
@@ -26,84 +44,127 @@ const MyOrders = () => {
     );
   };
 
-  if (loading) return <p className="text-center py-10">Loading...</p>;
+  if (loading) {
+    return (
+      <div className="py-20 text-center text-gray-500">
+        Loading your orders…
+      </div>
+    );
+  }
 
   const activeOrders = orders.filter(
     (o) => o.status !== "Cancelled"
   );
-
   const cancelledOrders = orders.filter(
     (o) => o.status === "Cancelled"
   );
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8 space-y-10">
+    <section className="min-h-[80vh] bg-neutral-50 px-4 py-10">
+      <div className="max-w-5xl mx-auto space-y-14">
 
-      {/* ACTIVE ORDERS */}
-      <div>
-        <h2 className="text-xl font-semibold mb-4">
-          Active Orders
-        </h2>
+        {/* PAGE TITLE */}
+        <h1 className="text-xl md:text-2xl font-semibold tracking-wide">
+          My Orders
+        </h1>
 
-        {activeOrders.length === 0 && (
-          <p className="text-gray-500">No active orders</p>
-        )}
+        {/* ACTIVE ORDERS */}
+        <div>
+          <h2 className="text-lg font-medium mb-4">
+            Active Orders
+          </h2>
 
-        {activeOrders.map((order) => (
-          <div
-            key={order._id}
-            className="border rounded-xl p-4 mb-4"
-          >
-            <p className="text-sm text-gray-500">
-              Order ID: {order._id}
+          {activeOrders.length === 0 && (
+            <p className="text-gray-500 text-sm">
+              You have no active orders.
             </p>
+          )}
 
-            <p className="font-semibold">
-              Total: ₹ {order.totalAmount}
-            </p>
+          <div className="space-y-4">
+            {activeOrders.map((order) => (
+              <div
+                key={order._id}
+                className="bg-white border rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+              >
+                {/* LEFT */}
+                <div>
+                  <p className="text-xs text-gray-400 uppercase tracking-wider">
+                    Order ID
+                  </p>
+                  <p className="text-sm font-medium break-all">
+                    {order._id}
+                  </p>
 
-            <p>Status: {order.status}</p>
+                  <p className="mt-2 font-semibold">
+                    ₹ {order.totalAmount}
+                  </p>
+                </div>
 
-            <button
-              onClick={() => cancelOrder(order._id)}
-              className="mt-3 px-4 py-2 border border-red-500 text-red-500 rounded hover:bg-red-50"
-            >
-              Cancel Order
-            </button>
+                {/* RIGHT */}
+                <div className="flex flex-col sm:items-end gap-3">
+                  <span
+                    className={`inline-block px-3 py-1 text-xs rounded-full ${statusColor(
+                      order.status
+                    )}`}
+                  >
+                    {order.status}
+                  </span>
+
+                  {order.status !== "Cancelled" && (
+                    <button
+                      onClick={() => cancelOrder(order._id)}
+                      className="text-sm text-red-600 hover:underline"
+                    >
+                      Cancel Order
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
 
-      {/* CANCELLED ORDERS */}
-      <div>
-        <h2 className="text-xl font-semibold mb-4 text-red-600">
-          Cancelled Orders
-        </h2>
+        {/* CANCELLED ORDERS */}
+        <div>
+          <h2 className="text-lg font-medium mb-4 text-red-600">
+            Cancelled Orders
+          </h2>
 
-        {cancelledOrders.length === 0 && (
-          <p className="text-gray-500">No cancelled orders</p>
-        )}
-
-        {cancelledOrders.map((order) => (
-          <div
-            key={order._id}
-            className="border rounded-xl p-4 mb-4 bg-gray-50"
-          >
-            <p className="text-sm text-gray-500">
-              Order ID: {order._id}
+          {cancelledOrders.length === 0 && (
+            <p className="text-gray-500 text-sm">
+              No cancelled orders.
             </p>
+          )}
 
-            <p className="font-semibold">
-              Total: ₹ {order.totalAmount}
-            </p>
+          <div className="space-y-4">
+            {cancelledOrders.map((order) => (
+              <div
+                key={order._id}
+                className="bg-gray-50 border rounded-2xl p-5 flex justify-between items-center"
+              >
+                <div>
+                  <p className="text-xs text-gray-400 uppercase tracking-wider">
+                    Order ID
+                  </p>
+                  <p className="text-sm font-medium break-all">
+                    {order._id}
+                  </p>
 
-            <p className="text-red-600 font-medium">
-              Status: Cancelled
-            </p>
+                  <p className="mt-2 font-semibold">
+                    ₹ {order.totalAmount}
+                  </p>
+                </div>
+
+                <span className="px-3 py-1 text-xs rounded-full bg-red-100 text-red-700">
+                  Cancelled
+                </span>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
+
       </div>
-    </div>
+    </section>
   );
 };
 

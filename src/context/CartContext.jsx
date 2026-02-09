@@ -80,21 +80,24 @@ const CartProvider = ({ children }) => {
   };
 
   // 🔄 UPDATE QUANTITY (stock-safe)
-  const updateQuantity = (productId, quantity) => {
-    if (quantity < 1) return;
+ const updateQuantity = (productId, delta) => {
+  setCart(prev =>
+    prev.map(item => {
+      if (item.productId !== productId) return item;
 
-    setCart((prev) =>
-      prev.map((item) => {
-        if (item.productId !== productId) return item;
+      const newQty = item.quantity + delta;
 
-        if (quantity > item.stock) {
-          return item; // 🚫 block over-stock
-        }
+      if (newQty < 1) return item;
 
-        return { ...item, quantity };
-      })
-    );
-  };
+      return {
+        ...item,
+        quantity: newQty,
+      };
+    })
+  );
+};
+
+
 
   // 🧹 CLEAR CART
   const clearCart = () => {

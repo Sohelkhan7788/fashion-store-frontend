@@ -29,7 +29,7 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  const { user, login } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   // 🔐 Already logged-in user → redirect
   useEffect(() => {
@@ -42,15 +42,20 @@ const Register = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // ✅ OTP-based register submit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.name || !form.email || !form.password) {
+    const cleanName = form.name.trim();
+    const cleanEmail = form.email.trim().toLowerCase();
+    const password = form.password;
+
+    if (!cleanName || !cleanEmail || !password) {
       toast.warning("Please fill all fields");
       return;
     }
 
-    if (form.password.length < 6) {
+    if (password.length < 6) {
       toast.warning("Password must be at least 6 characters");
       return;
     }
@@ -58,17 +63,18 @@ const Register = () => {
     try {
       setLoading(true);
 
-      const res = await api.post("/auth/register", form);
+      await api.post("/auth/register", {
+        name: cleanName,
+        email: cleanEmail,
+        password,
+      });
 
-      // ✅ Save token
-      localStorage.setItem("token", res.data.token);
+      toast.success("OTP sent to your email 📧");
 
-      // ✅ Update AuthContext
-      login(res.data.user);
-
-      toast.success("Account created successfully 🎉");
-      navigate("/");
-
+      // 🔁 Redirect to OTP verify page
+      navigate("/verify-otp", {
+        state: { email: cleanEmail },
+      });
     } catch (err) {
       toast.error(
         err.response?.data?.message || "Registration failed"
@@ -147,9 +153,13 @@ const Register = () => {
               transition={{ type: "spring", stiffness: 300 }}
               disabled={loading}
               type="submit"
-              className="w-full bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition disabled:opacity-50"
+              className={`w-full py-3 rounded-lg font-medium text-white ${
+                loading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-black hover:bg-gray-800"
+              }`}
             >
-              {loading ? "Creating account..." : "Register"}
+              {loading ? "Sending OTP..." : "Register"}
             </motion.button>
           </motion.form>
 

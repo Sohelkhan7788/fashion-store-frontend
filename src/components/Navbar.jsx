@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   const { cart } = useContext(CartContext);
   const { user, logout, isAuthenticated } = useContext(AuthContext);
@@ -17,117 +18,167 @@ const Navbar = () => {
     setMenuOpen(false);
   }, [location.pathname]);
 
-  const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const totalQty = cart.reduce((s, i) => s + i.quantity, 0);
 
   const handleLogout = () => {
     logout();
-    toast.success("Logged out successfully");
+    toast.success("Logged out");
     navigate("/login");
   };
 
-  const navClass =
-    "text-sm font-medium hover:text-gray-600 transition";
+  const linkClass = ({ isActive }) =>
+    `relative px-1 text-sm font-medium transition
+     ${isActive ? "text-black" : "text-gray-600 hover:text-black"}
+     after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-full
+     after:scale-x-0 after:bg-black after:transition
+     ${isActive ? "after:scale-x-100" : "hover:after:scale-x-100"}
+    `;
 
   return (
-    <nav className="bg-white shadow sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+    <>
+      <nav
+        className={`
+          fixed top-0 left-0 right-0 z-50
+          transition-all duration-300
+          ${scrolled
+            ? "backdrop-blur bg-white/80 shadow-md"
+            : "bg-white"}
+        `}
+      >
+        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
 
-        {/* CART */}
-        <Link to="/cart" className="relative">
-          🛒
-          {totalQty > 0 && (
-            <span className="absolute -top-2 -right-2 bg-black text-white text-xs h-5 w-5 flex items-center justify-center rounded-full">
-              {totalQty}
-            </span>
-          )}
-        </Link>
+          {/* LOGO */}
+          <Link
+            to="/"
+            className="text-xl font-extrabold tracking-tight"
+          >
+            Fashion<span className="text-gray-500">Store</span>
+          </Link>
 
-        {/* LOGO */}
-        <Link to="/" className="text-xl font-bold">
-          FashionStore
-        </Link>
+          {/* DESKTOP LINKS */}
+          <div className="hidden md:flex items-center gap-8">
+            <NavLink to="/" className={linkClass}>Home</NavLink>
+            <NavLink to="/blog" className={linkClass}>Blog</NavLink>
 
-        {/* DESKTOP MENU */}
-        <div className="hidden md:flex items-center gap-6">
-          <NavLink to="/" className={navClass}>Home</NavLink>
-          <NavLink to="/blog" className={navClass}>Blog</NavLink>
+            {isAuthenticated && (
+              <>
+                <NavLink to="/my-orders" className={linkClass}>
+                  Orders
+                </NavLink>
+                <NavLink to="/profile" className={linkClass}>
+                  Account
+                </NavLink>
+              </>
+            )}
 
-          {/* AUTHENTICATED USERS (USER + ADMIN BOTH) */}
-          {isAuthenticated && (
-            <>
-              <NavLink to="/my-orders" className={navClass}>
-                My Orders
+            {user?.isAdmin && (
+              <NavLink to="/admin" className={linkClass}>
+                Admin
               </NavLink>
+            )}
+          </div>
 
-              <NavLink to="/profile" className={navClass}>
-                Profile
-              </NavLink>
-            </>
-          )}
+          {/* RIGHT */}
+          <div className="flex items-center gap-4">
 
-          {/* ADMIN */}
-          {user?.isAdmin && (
-            <NavLink to="/admin" className={navClass}>
-              Admin
-            </NavLink>
-          )}
+            {/* CART */}
+            <Link to="/cart" className="relative text-2xl">
+              🛒
+              {totalQty > 0 && (
+                <span className="
+                  absolute -top-2 -right-2
+                  bg-black text-white text-xs
+                  h-5 w-5 flex items-center justify-center
+                  rounded-full animate-pulse
+                ">
+                  {totalQty}
+                </span>
+              )}
+            </Link>
 
-          {/* AUTH */}
-          {!isAuthenticated ? (
-            <>
-              <NavLink to="/login" className={navClass}>Login</NavLink>
-              <NavLink to="/register" className={navClass}>Register</NavLink>
-            </>
-          ) : (
+            {/* AUTH */}
+            <div className="hidden md:block">
+              {!isAuthenticated ? (
+                <NavLink
+                  to="/login"
+                  className="bg-black text-white px-4 py-2 rounded-lg text-sm"
+                >
+                  Login
+                </NavLink>
+              ) : (
+                <button
+                  onClick={handleLogout}
+                  className="text-sm text-gray-600 hover:text-black"
+                >
+                  Logout
+                </button>
+              )}
+            </div>
+
+            {/* MOBILE MENU */}
             <button
-              onClick={handleLogout}
-              className="text-sm font-medium hover:underline"
+              className="md:hidden text-2xl"
+              onClick={() => setMenuOpen(true)}
             >
-              Logout
+              ☰
             </button>
-          )}
+          </div>
         </div>
+      </nav>
 
-        {/* MOBILE TOGGLE */}
-        <button
-          className="md:hidden text-2xl"
-          onClick={() => setMenuOpen(prev => !prev)}
-        >
-          ☰
-        </button>
-      </div>
-
-      {/* MOBILE MENU */}
+      {/* MOBILE DRAWER */}
       {menuOpen && (
-        <div className="md:hidden bg-white border-t px-4 py-4 flex flex-col gap-3">
-          <NavLink to="/">Home</NavLink>
-          <NavLink to="/blog">Blog</NavLink>
-          <NavLink to="/cart">Cart ({totalQty})</NavLink>
-
-          {isAuthenticated && (
-            <>
-              <NavLink to="/my-orders">My Orders</NavLink>
-              <NavLink to="/profile">Profile</NavLink>
-            </>
-          )}
-
-          {user?.isAdmin && (
-            <NavLink to="/admin">Admin</NavLink>
-          )}
-
-          {!isAuthenticated ? (
-            <>
-              <NavLink to="/login">Login</NavLink>
-              <NavLink to="/register">Register</NavLink>
-            </>
-          ) : (
-            <button onClick={handleLogout} className="text-left">
-              Logout
+        <div className="fixed inset-0 z-50 bg-black/40">
+          <div className="
+            absolute right-0 top-0 h-full w-3/4 max-w-sm
+            bg-white p-6 flex flex-col gap-4
+            animate-slideIn
+          ">
+            <button
+              onClick={() => setMenuOpen(false)}
+              className="self-end text-xl"
+            >
+              ✕
             </button>
-          )}
+
+            <NavLink to="/">Home</NavLink>
+            <NavLink to="/blog">Blog</NavLink>
+            <NavLink to="/cart">Cart ({totalQty})</NavLink>
+
+            {isAuthenticated && (
+              <>
+                <NavLink to="/my-orders">My Orders</NavLink>
+                <NavLink to="/profile">Profile</NavLink>
+              </>
+            )}
+
+            {user?.isAdmin && (
+              <NavLink to="/admin">Admin</NavLink>
+            )}
+
+            {!isAuthenticated ? (
+              <NavLink to="/login">Login</NavLink>
+            ) : (
+              <button
+                onClick={handleLogout}
+                className="text-left text-red-600"
+              >
+                Logout
+              </button>
+            )}
+          </div>
         </div>
       )}
-    </nav>
+
+      {/* Spacer for fixed navbar */}
+      <div className="h-16" />
+    </>
   );
 };
 

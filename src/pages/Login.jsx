@@ -30,7 +30,9 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.email || !form.password) {
+    const cleanEmail = form.email.trim().toLowerCase();
+
+    if (!cleanEmail || !form.password) {
       toast.warning("All fields are required");
       return;
     }
@@ -38,19 +40,20 @@ const Login = () => {
     try {
       setLoading(true);
 
-      const res = await api.post("/auth/login", form);
+      const res = await api.post("/auth/login", {
+        email: cleanEmail,
+        password: form.password,
+      });
 
-      // ✅ UPDATE AUTH CONTEXT (ONLY THIS)
+      // ✅ Update Auth Context
       login(res.data.user, res.data.token);
 
       toast.success("Login successful 🎉");
 
-      // ✅ REDIRECT BACK OR HOME
       const redirectTo =
         location.state?.from?.pathname || "/";
 
       navigate(redirectTo, { replace: true });
-
     } catch (err) {
       toast.error(
         err.response?.data?.message || "Login failed"
@@ -91,10 +94,23 @@ const Login = () => {
             className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-black outline-none"
           />
 
+          <div className="text-right">
+            <Link
+              to="/forgot-password"
+              className="text-sm text-gray-600 underline hover:text-black"
+            >
+              Forgot password?
+            </Link>
+          </div>
+
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-black text-white py-3 rounded-lg disabled:opacity-50"
+            className={`w-full py-3 rounded-lg text-white ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-black hover:opacity-90"
+            }`}
           >
             {loading ? "Signing in..." : "Login"}
           </button>
