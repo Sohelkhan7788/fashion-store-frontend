@@ -6,6 +6,7 @@ import Footer from "./components/Footer";
 
 // Public
 import Home from "./pages/Home";
+import Shop from "./pages/Shop";
 import Blog from "./pages/Blog";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -27,11 +28,13 @@ import EditProfile from "./pages/EditProfile";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 // Admin
+import AdminProtected from "./admin/AdminProtected";
 import AdminLayout from "./admin/layout/AdminLayout";
 import AdminDashboard from "./admin/pages/AdminDashboard";
 import AdminProducts from "./admin/pages/AdminProducts";
 import AdminOrders from "./admin/pages/AdminOrders";
 import AddProduct from "./admin/pages/AddProduct";
+import EditProduct from "./admin/pages/EditProduct";
 
 function App() {
   return (
@@ -41,6 +44,7 @@ function App() {
       <Routes>
         {/* ================= PUBLIC ================= */}
         <Route path="/" element={<Home />} />
+        <Route path="/shop" element={<Shop />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/product/:id" element={<ProductDetails />} />
@@ -110,18 +114,14 @@ function App() {
         />
 
         {/* ================= ADMIN ================= */}
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute>
-              <AdminLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<AdminDashboard />} />
-          <Route path="products" element={<AdminProducts />} />
-          <Route path="products/add" element={<AddProduct />} />
-          <Route path="orders" element={<AdminOrders />} />
+        <Route path="/admin" element={<AdminProtected />}>
+          <Route element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="products" element={<AdminProducts />} />
+            <Route path="products/add" element={<AddProduct />} />
+            <Route path="products/edit/:id" element={<EditProduct />} />
+            <Route path="orders" element={<AdminOrders />} />
+          </Route>
         </Route>
       </Routes>
 

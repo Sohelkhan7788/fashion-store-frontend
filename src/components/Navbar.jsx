@@ -1,8 +1,10 @@
 import { useState, useContext, useEffect } from "react";
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
+import { ShoppingBag, Menu, X } from "lucide-react";
 import { CartContext } from "../context/CartContext";
 import { AuthContext } from "../context/AuthContext";
 import { toast } from "react-toastify";
+import Logo from "./Logo";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -33,10 +35,10 @@ const Navbar = () => {
   };
 
   const linkClass = ({ isActive }) =>
-    `relative px-1 text-sm font-medium transition
-     ${isActive ? "text-black" : "text-gray-600 hover:text-black"}
-     after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-full
-     after:scale-x-0 after:bg-black after:transition
+    `relative px-1 py-1 text-[13px] tracking-wide uppercase font-medium transition
+     ${isActive ? "text-ink" : "text-ink-soft/70 hover:text-ink"}
+     after:absolute after:left-0 after:-bottom-1 after:h-[1.5px] after:w-full
+     after:scale-x-0 after:origin-left after:bg-brass after:transition-transform after:duration-300
      ${isActive ? "after:scale-x-100" : "hover:after:scale-x-100"}
     `;
 
@@ -45,26 +47,24 @@ const Navbar = () => {
       <nav
         className={`
           fixed top-0 left-0 right-0 z-50
-          transition-all duration-300
+          transition-all duration-300 border-b
           ${scrolled
-            ? "backdrop-blur bg-white/80 shadow-md"
-            : "bg-white"}
+            ? "backdrop-blur-md bg-paper/90 border-line shadow-[0_1px_0_0_rgba(0,0,0,0.02)]"
+            : "bg-paper border-transparent"}
         `}
       >
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-[68px] flex items-center justify-between">
 
           {/* LOGO */}
-          <Link
-            to="/"
-            className="text-xl font-extrabold tracking-tight"
-          >
-            Fashion<span className="text-gray-500">Store</span>
+          <Link to="/" className="shrink-0" aria-label="FashionStore home">
+            <Logo />
           </Link>
 
           {/* DESKTOP LINKS */}
-          <div className="hidden md:flex items-center gap-8">
-            <NavLink to="/" className={linkClass}>Home</NavLink>
-            <NavLink to="/blog" className={linkClass}>Blog</NavLink>
+          <div className="hidden md:flex items-center gap-9">
+            <NavLink to="/" end className={linkClass}>Home</NavLink>
+            <NavLink to="/shop" className={linkClass}>Shop</NavLink>
+            <NavLink to="/blog" className={linkClass}>Journal</NavLink>
 
             {isAuthenticated && (
               <>
@@ -85,17 +85,17 @@ const Navbar = () => {
           </div>
 
           {/* RIGHT */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-5">
 
             {/* CART */}
-            <Link to="/cart" className="relative text-2xl">
-              🛒
+            <Link to="/cart" className="relative text-ink" aria-label="Cart">
+              <ShoppingBag size={21} strokeWidth={1.6} />
               {totalQty > 0 && (
                 <span className="
                   absolute -top-2 -right-2
-                  bg-black text-white text-xs
-                  h-5 w-5 flex items-center justify-center
-                  rounded-full animate-pulse
+                  bg-ink text-paper text-[10px] font-semibold
+                  h-[18px] w-[18px] flex items-center justify-center
+                  rounded-full
                 ">
                   {totalQty}
                 </span>
@@ -107,14 +107,14 @@ const Navbar = () => {
               {!isAuthenticated ? (
                 <NavLink
                   to="/login"
-                  className="bg-black text-white px-4 py-2 rounded-lg text-sm"
+                  className="bg-ink text-paper px-5 py-2.5 text-[13px] tracking-wide uppercase font-medium hover:bg-ink-soft transition"
                 >
                   Login
                 </NavLink>
               ) : (
                 <button
                   onClick={handleLogout}
-                  className="text-sm text-gray-600 hover:text-black"
+                  className="text-[13px] tracking-wide uppercase font-medium text-ink-soft/70 hover:text-ink transition"
                 >
                   Logout
                 </button>
@@ -123,10 +123,11 @@ const Navbar = () => {
 
             {/* MOBILE MENU */}
             <button
-              className="md:hidden text-2xl"
+              className="md:hidden text-ink"
               onClick={() => setMenuOpen(true)}
+              aria-label="Open menu"
             >
-              ☰
+              <Menu size={24} strokeWidth={1.6} />
             </button>
           </div>
         </div>
@@ -134,40 +135,45 @@ const Navbar = () => {
 
       {/* MOBILE DRAWER */}
       {menuOpen && (
-        <div className="fixed inset-0 z-50 bg-black/40">
-          <div className="
-            absolute right-0 top-0 h-full w-3/4 max-w-sm
-            bg-white p-6 flex flex-col gap-4
-            animate-slideIn
-          ">
+        <div className="fixed inset-0 z-50 bg-ink/40" onClick={() => setMenuOpen(false)}>
+          <div
+            className="
+              absolute right-0 top-0 h-full w-4/5 max-w-xs
+              bg-paper p-7 flex flex-col gap-1
+              animate-slideIn
+            "
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               onClick={() => setMenuOpen(false)}
-              className="self-end text-xl"
+              className="self-end text-ink mb-6"
+              aria-label="Close menu"
             >
-              ✕
+              <X size={22} strokeWidth={1.6} />
             </button>
 
-            <NavLink to="/">Home</NavLink>
-            <NavLink to="/blog">Blog</NavLink>
-            <NavLink to="/cart">Cart ({totalQty})</NavLink>
+            <MobileLink to="/">Home</MobileLink>
+            <MobileLink to="/shop">Shop</MobileLink>
+            <MobileLink to="/blog">Journal</MobileLink>
+            <MobileLink to="/cart">Cart ({totalQty})</MobileLink>
 
             {isAuthenticated && (
               <>
-                <NavLink to="/my-orders">My Orders</NavLink>
-                <NavLink to="/profile">Profile</NavLink>
+                <MobileLink to="/my-orders">My Orders</MobileLink>
+                <MobileLink to="/profile">Profile</MobileLink>
               </>
             )}
 
-            {user?.isAdmin && (
-              <NavLink to="/admin">Admin</NavLink>
-            )}
+            {user?.isAdmin && <MobileLink to="/admin">Admin</MobileLink>}
+
+            <div className="h-px bg-line my-4" />
 
             {!isAuthenticated ? (
-              <NavLink to="/login">Login</NavLink>
+              <MobileLink to="/login">Login</MobileLink>
             ) : (
               <button
                 onClick={handleLogout}
-                className="text-left text-red-600"
+                className="text-left py-3 text-rose font-medium"
               >
                 Logout
               </button>
@@ -177,9 +183,22 @@ const Navbar = () => {
       )}
 
       {/* Spacer for fixed navbar */}
-      <div className="h-16" />
+      <div className="h-[68px]" />
     </>
   );
 };
+
+const MobileLink = ({ to, children }) => (
+  <NavLink
+    to={to}
+    className={({ isActive }) =>
+      `py-3 text-[15px] font-medium border-b border-line/70 ${
+        isActive ? "text-brass" : "text-ink"
+      }`
+    }
+  >
+    {children}
+  </NavLink>
+);
 
 export default Navbar;

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import ProductCard from "./ProductCard";
 import api from "../utils/api";
 
@@ -6,7 +7,6 @@ const ProductGrid = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -25,19 +25,24 @@ const ProductGrid = () => {
   }, []);
 
   if (loading) {
-    return <p className="text-center py-20">Loading products...</p>;
+    return (
+      <div className="mx-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className="aspect-[3/4] bg-paper-dim animate-pulse" />
+        ))}
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <p className="text-center text-red-500 py-20">
+      <p className="text-center text-rose py-20">
         {error}
       </p>
     );
   }
 
-  // ✅ show limited or all
-  const visibleProducts = showAll ? products : products.slice(0, 6);
+  const visibleProducts = products.slice(0, 8);
 
   return (
     <>
@@ -50,15 +55,14 @@ const ProductGrid = () => {
         ))}
       </div>
 
-      {/* Show All Button */}
-      {!showAll && products.length > 6 && (
+      {products.length > 8 && (
         <div className="mt-10 text-center">
-          <button
-            onClick={() => setShowAll(true)}
-            className="border border-black px-6 py-3 text-sm font-medium hover:bg-black hover:text-white transition"
+          <Link
+            to="/shop"
+            className="inline-block border border-ink px-7 py-3 text-xs uppercase tracking-widest font-medium hover:bg-ink hover:text-paper transition"
           >
-            Show All Products
-          </button>
+            Shop All Products
+          </Link>
         </div>
       )}
     </>

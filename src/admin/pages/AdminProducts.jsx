@@ -55,7 +55,7 @@ const AdminProducts = () => {
   if (loading) return <p>Loading...</p>;
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl">
 
       {/* 🔥 HEADER + ADD BUTTON */}
       <div className="flex items-center justify-between mb-4">
@@ -64,7 +64,7 @@ const AdminProducts = () => {
         {/* ✅ ADD PRODUCT BUTTON */}
         <button
           onClick={() => navigate("/admin/products/add")}
-          className="px-4 py-2 bg-black text-white rounded active:scale-95"
+          className="px-4 py-2 bg-ink text-paper hover:bg-ink-soft transition active:scale-[0.98]"
         >
           + Add Product
         </button>
@@ -75,22 +75,22 @@ const AdminProducts = () => {
         {products.map((p) => (
           <div
             key={p._id}
-            className="bg-white p-4 rounded-xl shadow flex gap-4 items-center"
+            className="bg-white/70 border border-line p-4 flex flex-wrap gap-4 items-center"
           >
             <img
               src={p.images?.[0]}
               alt={p.title}
-              className="h-16 w-16 object-cover rounded border"
+              className="h-16 w-16 object-cover border border-line"
             />
 
             <div className="flex-1">
               <p className="font-medium">{p.title}</p>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-ink-soft/60">
                 ₹ {p.price}
               </p>
               <p
                 className={`text-xs ${
-                  p.inStock ? "text-green-600" : "text-red-600"
+                  p.inStock ? "text-moss" : "text-rose"
                 }`}
               >
                 {p.inStock ? "In Stock" : "Out of Stock"}
@@ -100,7 +100,7 @@ const AdminProducts = () => {
             {/* ACTIONS */}
             <button
               onClick={() => toggleStock(p)}
-              className="px-3 py-1 text-sm border rounded"
+              className="px-3 py-1.5 text-xs uppercase tracking-wide border border-line hover:border-ink transition"
             >
               Toggle Stock
             </button>
@@ -109,14 +109,14 @@ const AdminProducts = () => {
               onClick={() =>
                 navigate(`/admin/products/edit/${p._id}`)
               }
-              className="px-3 py-1 text-sm border rounded"
+              className="px-3 py-1.5 text-xs uppercase tracking-wide border border-line hover:border-ink transition"
             >
               Edit
             </button>
 
             <button
               onClick={() => deleteProduct(p._id)}
-              className="px-3 py-1 text-sm border border-red-500 text-red-500 rounded"
+              className="px-3 py-1.5 text-xs uppercase tracking-wide border border-rose text-rose hover:bg-rose hover:text-paper transition"
             >
               Delete
             </button>

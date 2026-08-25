@@ -12,7 +12,6 @@ const ProductCard = ({ product }) => {
 
   const [adding, setAdding] = useState(false);
 
-  // 🔐 SAFE ADD TO CART (NO DOUBLE FIRE)
   const handleAddToCart = () => {
     if (!user) {
       navigate("/login", { state: { from: location.pathname } });
@@ -23,8 +22,6 @@ const ProductCard = ({ product }) => {
 
     setAdding(true);
     addToCart(product);
-
-    // UX feedback only (does NOT affect cart logic)
     setTimeout(() => setAdding(false), 700);
   };
 
@@ -37,62 +34,59 @@ const ProductCard = ({ product }) => {
     "https://via.placeholder.com/400x400?text=No+Image";
 
   return (
-    <div className="group bg-white rounded-xl overflow-hidden border transition hover:shadow-lg">
+    <div className="group bg-white/60 overflow-hidden border border-line transition hover:shadow-[0_12px_32px_-16px_rgba(22,20,15,0.25)]">
 
-      {/* IMAGE */}
       <div
         onClick={goToDetails}
-        className="relative aspect-[3/4] bg-gray-100 cursor-pointer"
+        className="relative aspect-[3/4] bg-paper-dim cursor-pointer overflow-hidden"
       >
         <img
           src={image}
           alt={product.title}
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
         />
+
+        {product.category && (
+          <span className="absolute top-3 left-3 bg-paper/90 text-ink text-[10px] uppercase tracking-widest px-2.5 py-1">
+            {product.category}
+          </span>
+        )}
 
         {!product.inStock && (
           <span className="
             absolute top-3 right-3
-            bg-black text-white text-xs
-            px-3 py-1 rounded-full
+            bg-ink text-paper text-[10px] uppercase tracking-widest
+            px-2.5 py-1
           ">
             Sold Out
           </span>
         )}
       </div>
 
-      {/* CONTENT */}
-      <div className="p-4 space-y-2">
-
-        {/* TITLE */}
+      <div className="p-4 space-y-1.5">
         <h3
           onClick={goToDetails}
-          className="
-            text-sm font-medium text-gray-900
-            line-clamp-2 cursor-pointer
-          "
+          className="text-[13.5px] font-medium text-ink line-clamp-2 cursor-pointer"
         >
           {product.title}
         </h3>
 
-        {/* PRICE */}
-        <p className="text-sm font-semibold text-gray-800">
-          ₹ {product.price}
+        <p className="text-sm font-semibold text-brass">
+          ₹{product.price}
         </p>
 
-        {/* CTA */}
         <button
           onClick={handleAddToCart}
           disabled={!product.inStock || adding}
           className={`
-            w-full mt-3 py-2 rounded-md text-sm font-medium
+            w-full mt-3 py-2.5 text-[12px] uppercase tracking-wider font-medium
             transition
             ${
               product.inStock
                 ? adding
-                  ? "bg-gray-200 text-gray-800"
-                  : "border border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white"
-                : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  ? "bg-moss text-paper"
+                  : "border border-ink text-ink hover:bg-ink hover:text-paper"
+                : "bg-paper-dim text-ink-soft/40 cursor-not-allowed"
             }
           `}
         >

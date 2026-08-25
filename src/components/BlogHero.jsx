@@ -27,18 +27,18 @@ const BlogHero = () => {
       ">
         <div className="text-white max-w-xl space-y-6">
 
-          <p className="uppercase tracking-[0.3em] text-xs text-gray-300">
+          <p className="uppercase tracking-[0.3em] text-xs text-brass-light">
             Our Journey
           </p>
 
           <h1 className="
             text-4xl md:text-6xl
-            font-semibold leading-tight
+            font-display font-medium leading-[1.05]
           ">
             Designed With <br /> Purpose
           </h1>
 
-          <p className="text-gray-200 text-sm md:text-base leading-relaxed">
+          <p className="text-paper/80 text-sm md:text-base leading-relaxed">
             We believe fashion is more than clothing.
             It’s a reflection of identity, intention,
             and modern living.
@@ -48,9 +48,9 @@ const BlogHero = () => {
             to="/blog"
             className="
               inline-block mt-4
-              border border-white
+              border border-paper/70
               px-6 py-3 rounded-full text-sm
-              hover:bg-white hover:text-black
+              hover:bg-paper hover:text-ink
               transition
             "
           >

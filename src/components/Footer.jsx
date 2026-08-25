@@ -2,15 +2,15 @@ import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <footer className="bg-zinc-900 text-gray-300 mt-24">
+    <footer className="bg-ink text-paper/60 mt-24">
       <div className="max-w-7xl mx-auto px-6 py-16 grid gap-12 md:grid-cols-4">
 
         {/* BRAND */}
         <div className="space-y-4">
-          <h2 className="text-white text-xl font-semibold tracking-wide">
+          <h2 className="text-paper text-2xl font-display italic font-medium tracking-tight">
             FashionStore
           </h2>
-          <p className="text-sm leading-relaxed text-gray-400">
+          <p className="text-sm leading-relaxed text-paper/50 max-w-xs">
             Modern fashion essentials designed for comfort,
             confidence, and everyday living.
           </p>
@@ -18,22 +18,22 @@ const Footer = () => {
 
         {/* NAVIGATION */}
         <div>
-          <h3 className="text-white text-sm font-semibold mb-4 uppercase tracking-wider">
+          <h3 className="text-paper text-xs font-semibold mb-4 uppercase tracking-widest">
             Company
           </h3>
           <ul className="space-y-3 text-sm">
             <li>
-              <Link to="/blog" className="hover:text-white transition">
+              <Link to="/blog" className="hover:text-brass-light transition">
                 Our Story
               </Link>
             </li>
             <li>
-              <Link to="/faq" className="hover:text-white transition">
+              <Link to="/faq" className="hover:text-brass-light transition">
                 FAQ
               </Link>
             </li>
             <li>
-              <Link to="/shipping" className="hover:text-white transition">
+              <Link to="/shipping" className="hover:text-brass-light transition">
                 Shipping & Returns
               </Link>
             </li>
@@ -42,10 +42,10 @@ const Footer = () => {
 
         {/* CONTACT */}
         <div>
-          <h3 className="text-white text-sm font-semibold mb-4 uppercase tracking-wider">
+          <h3 className="text-paper text-xs font-semibold mb-4 uppercase tracking-widest">
             Contact
           </h3>
-          <ul className="space-y-3 text-sm text-gray-400">
+          <ul className="space-y-3 text-sm text-paper/50">
             <li>San Francisco, CA</li>
             <li>Email: soyalkhan@gmail.com</li>
             <li>Phone: +91 80056 20439</li>
@@ -54,7 +54,7 @@ const Footer = () => {
 
         {/* SOCIAL */}
         <div>
-          <h3 className="text-white text-sm font-semibold mb-4 uppercase tracking-wider">
+          <h3 className="text-paper text-xs font-semibold mb-4 uppercase tracking-widest">
             Follow
           </h3>
           <div className="flex gap-4">
@@ -84,8 +84,8 @@ const Footer = () => {
                 aria-label={icon.label}
                 className="
                   h-10 w-10 flex items-center justify-center
-                  rounded-full border border-gray-700
-                  hover:border-white hover:text-white
+                  rounded-full border border-paper/20
+                  hover:border-brass hover:text-brass-light
                   transition
                 "
               >
@@ -99,7 +99,7 @@ const Footer = () => {
       </div>
 
       {/* COPYRIGHT */}
-      <div className="border-t border-zinc-800 py-6 text-center text-xs text-gray-500">
+      <div className="border-t border-paper/10 py-6 text-center text-xs text-paper/40">
         © 2025 FashionStore. Crafted by Sohel Khan.
       </div>
     </footer>

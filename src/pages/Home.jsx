@@ -11,22 +11,22 @@ const Home = () => {
       <br /><br />
 
       {/* BLOG STORY STRIP */}
-      <section className="bg-white">
+      <section className="bg-paper">
         <BlogHero />
       </section>
 
       {/* FEATURED PRODUCTS */}
       <section
         id="featured-products"
-        className="py-24 bg-gray-50"
+        className="py-24 bg-paper-dim/50"
       >
         <div className="max-w-7xl mx-auto px-6">
 
           <div className="mb-14 text-center">
-            <p className="text-xs uppercase tracking-widest text-gray-500 mb-3">
+            <p className="text-xs uppercase tracking-widest text-brass mb-3">
               Handpicked
             </p>
-            <h2 className="text-3xl font-semibold">
+            <h2 className="font-display text-3xl md:text-4xl font-medium">
               Featured Collection
             </h2>
           </div>
@@ -36,7 +36,7 @@ const Home = () => {
       </section>
 
       {/* BRAND VALUES / SERVICES */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-paper">
         <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-16 text-center">
 
           {/* VALUE 1 */}
@@ -47,7 +47,7 @@ const Home = () => {
               fill="none"
               stroke="currentColor"
               strokeWidth="1.5"
-              className="mx-auto h-10 w-10 text-gray-800"
+              className="mx-auto h-10 w-10 text-brass"
             >
               <path
                 strokeLinecap="round"
@@ -60,7 +60,7 @@ const Home = () => {
               Free Shipping & Returns
             </h3>
 
-            <p className="text-sm text-gray-600 leading-relaxed">
+            <p className="text-sm text-ink-soft/70 leading-relaxed">
               Seamless delivery and easy returns,
               because comfort matters.
             </p>
@@ -74,7 +74,7 @@ const Home = () => {
               viewBox="0 0 24 24"
               strokeWidth={1.5}
               stroke="currentColor"
-              className="mx-auto h-10 w-10 text-gray-800"
+              className="mx-auto h-10 w-10 text-brass"
             >
               <path
                 strokeLinecap="round"
@@ -87,7 +87,7 @@ const Home = () => {
               Secure Payments
             </h3>
 
-            <p className="text-sm text-gray-600 leading-relaxed">
+            <p className="text-sm text-ink-soft/70 leading-relaxed">
               Your transactions are protected
               with trusted payment systems.
             </p>
@@ -101,7 +101,7 @@ const Home = () => {
               viewBox="0 0 24 24"
               strokeWidth="1.5"
               stroke="currentColor"
-              className="mx-auto h-10 w-10 text-gray-800"
+              className="mx-auto h-10 w-10 text-brass"
             >
               <path
                 strokeLinecap="round"
@@ -114,7 +114,7 @@ const Home = () => {
               Customer Care
             </h3>
 
-            <p className="text-sm text-gray-600 leading-relaxed">
+            <p className="text-sm text-ink-soft/70 leading-relaxed">
               Real people, real support —
               always here to help.
             </p>
