@@ -46,9 +46,9 @@ const Footer = () => {
             Contact
           </h3>
           <ul className="space-y-3 text-sm text-paper/50">
-            <li>San Francisco, CA</li>
-            <li>Email: soyalkhan@gmail.com</li>
-            <li>Phone: +91 80056 20439</li>
+            <li>Sanjay Nagar B, Jhotwara, Jaipur 302012</li>
+            <li>Email: fashionhub.support@gmail.com</li>
+            <li>Phone: +91 7665630921</li>
           </ul>
         </div>
 
@@ -60,7 +60,7 @@ const Footer = () => {
           <div className="flex gap-4">
             {[
               {
-                href: "https://www.instagram.com/callmesohel.439/",
+                href: "https://www.instagram.com/fashionhub.jpr/",
                 label: "Instagram",
                 path:
                   "M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7Zm10 2c1.7 0 3 1.3 3 3v10c0 1.7-1.3 3-3 3H7c-1.7 0-3-1.3-3-3V7c0-1.7 1.3-3 3-3h10Zm-5 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z",
